@@ -1,17 +1,9 @@
 package skyline;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
-
-import javax.imageio.ImageIO;
 
 import com.github.davidmoten.rtree.Entry;
 import com.github.davidmoten.rtree.Leaf;
@@ -237,46 +229,6 @@ public final class SkylineApp {
             }
         }
 
-        if (tree.root().isPresent()) {
-            saveLabeledTree(tree);
-        }
-    }
-
-    private static void saveLabeledTree(RTree<String, Point> tree) throws IOException {
-        final int size = 800;
-        Rectangle bounds = tree.mbr().get();
-        Rectangle view = Geometries.rectangle(bounds.x1() - 1, bounds.y1() - 1,
-                bounds.x2() + 1, bounds.y2() + 1);
-        BufferedImage treeImage = tree.visualize(size, size, view).createImage();
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = image.createGraphics();
-        try {
-            // Flip the bounding boxes so y increases upward; draw labels upright afterward.
-            graphics.drawImage(treeImage, 0, 0, size, size, 0, size, size, 0, null);
-            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-            graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-            for (Entry<String, Point> entry : tree.entries().toBlocking().toIterable()) {
-                Point point = entry.geometry();
-                int x = (int) Math.round((point.x() - view.x1())
-                        / (view.x2() - view.x1()) * size);
-                int y = size - 1 - (int) Math.round((point.y() - view.y1())
-                        / (view.y2() - view.y1()) * size);
-                graphics.setColor(Color.BLACK);
-                graphics.fillOval(x - 6, y - 6, 12, 12);
-                int labelWidth = graphics.getFontMetrics().stringWidth(entry.value());
-                graphics.setColor(Color.WHITE);
-                graphics.fillRect(x + 8, y - 24, labelWidth + 6, 20);
-                graphics.setColor(Color.BLACK);
-                graphics.drawString(entry.value(), x + 11, y - 9);
-            }
-        } finally {
-            graphics.dispose();
-        }
-        File output = new File("target/rtree.png");
-        output.getParentFile().mkdirs();
-        ImageIO.write(image, "PNG", output);
-        System.out.println("Saved labeled R-tree: " + output);
     }
 
     public static void createSkyline(

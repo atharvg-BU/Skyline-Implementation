@@ -16,7 +16,6 @@ The application uses an `RTree<String, Point>` with a maximum of three children 
 | `insertSkyline` | Checks the new point against the current skyline. If it is dominated or has the same coordinates as a skyline representative, the skyline is unchanged. Otherwise, it safely removes dominated skyline entries with `removeIf` and adds the new entry. |
 | `deleteSkyline` | Leaves the skyline unchanged when the deleted record is not a skyline representative. Otherwise, it removes that entry and calls the restricted replacement search. |
 | `restrictedBBSSkyline` | Searches for replacements in the deleted point's dominance region, bounded by surviving skyline neighbors. It skips rectangles completely outside the region and explores rectangles that overlap it. Surviving skyline points and newly accepted replacements filter candidates. |
-| `saveLabeledTree` | Creates an 800-by-800 PNG of the current R-tree, including point IDs, with y increasing upward. |
 
 The caller updates the actual R-tree before updating the skyline. A dominated insertion still enters the database, since it may become a skyline point after a later deletion. Deleting a record passes the updated tree root to the replacement search. Deleting the final record is handled without accessing an absent root.
 
@@ -32,7 +31,8 @@ Each nonblank line must contain exactly two finite numeric coordinates separated
 
 Each record receives its original file line number as its string ID. Blank lines are skipped, so IDs can have gaps. The application reports malformed records with their line numbers. New records require a nonempty ID that is not already in use.
 
-The provided `Dataset_for_PA1` contains 38,377 records. The smaller `skyline_dataset_points.txt` contains the 13-point example used for development.
+- **`Dataset_for_PA1`**: The test dataset provided by the instructor for Programming Assignment 1. It contains 38,377 two-dimensional points and is used to test skyline computation and updates on a larger dataset.
+- **`skyline_dataset_points.txt`**: A smaller dataset created from the example in the lecture slides. It contains 13 two-dimensional points and is used to manually verify skyline results and demonstrate insertion and deletion behavior.
 
 ## Build and run
 
@@ -83,7 +83,7 @@ These updates run in order and then exit without opening the menu. To delete the
 ./run-skyline.sh skyline_dataset_points.txt --delete 9
 ```
 
-Updates affect only the current process; the dataset file is not rewritten. When the program finishes with a nonempty tree, it saves the labeled tree visualization as `target/rtree.png`, relative to the directory from which the program was launched.
+Updates affect only the current process; the dataset file is not rewritten. Point counts and skyline results are displayed in the terminal.
 
 ## Validation performed
 
@@ -93,4 +93,4 @@ These were development checks run separately from the repository's existing libr
 
 ## AI assistance statement
 
-I used Codex to understand the existing R-tree code and the roles of its classes, and to help write the R-tree visualization code and the shell script used to run the program.
+I used Codex to understand the existing R-tree code and the roles of its classes, and to help write the shell script used to run the program. 
